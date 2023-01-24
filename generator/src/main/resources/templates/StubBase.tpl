@@ -1,43 +1,41 @@
-package {{packageName}}
+package {{packageName}};
 
-import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.tomakehurst.wiremock.client.MappingBuilder;
 
-import com.github.tomakehurst.wiremock.client.MappingBuilder
-import com.github.tomakehurst.wiremock.client.WireMock.*
+import static com.github.tomakehurst.wiremock.client.WireMock.*;
 
-open class StubBase(objectMapper: ObjectMapper) {
-    private val objectMapper: ObjectMapper
+class StubBase {
 
-    init {
-        this.objectMapper = objectMapper
+    private static final String CONTENT_TYPE_HEADER_NAME = "Content-Type";
+    private static final String CONTENT_TYPE_HEADER_VALUE = "application/json; charset=utf-8";
+
+    private final ObjectMapper objectMapper;
+
+    StubBase(final ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
     }
 
-    fun buildGet(requestUrl: String?, status: Int, response: String) {
-        stub(status, response, get(urlEqualTo(requestUrl)))
+    void buildGet(final String requestUrl, final int status, final String response) {
+        stub(status, response, get(urlEqualTo(requestUrl)));
     }
 
-    private fun stub(status: Int, response: String, mappingBuilder: MappingBuilder) {
-        stubFor(
-            mappingBuilder
+    private void stub(final int status, final String response, final MappingBuilder mappingBuilder) {
+        stubFor(mappingBuilder
                 .willReturn(
-                    aResponse()
-                        .withStatus(status)
-                        .withBody(response)
-                        .withHeader(CONTENT_TYPE_HEADER_NAME, CONTENT_TYPE_HEADER_VALUE)
+                        aResponse()
+                                .withStatus(status)
+                                .withBody(response)
+                                .withHeader(CONTENT_TYPE_HEADER_NAME, CONTENT_TYPE_HEADER_VALUE)
                 )
-        )
+        );
     }
 
-    fun buildBody(`object`: Any?): String {
-        return try {
-            objectMapper.writeValueAsString(`object`)
-        } catch (e: Exception) {
-            throw RuntimeException(e)
+    String buildBody(final Object object) {
+        try {
+            return objectMapper.writeValueAsString(object);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
-    }
-
-    companion object {
-        private const val CONTENT_TYPE_HEADER_NAME = "Content-Type"
-        private const val CONTENT_TYPE_HEADER_VALUE = "application/json; charset=utf-8"
     }
 }

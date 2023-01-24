@@ -2,17 +2,17 @@ import org.springframework.boot.gradle.plugin.SpringBootPlugin
 
 plugins {
     id 'org.springframework.boot' version '2.5.6' apply false
-    id 'java-library'
+//    id 'java-library'
     id 'maven-publish'
     id 'jacoco'
     id "org.jetbrains.kotlin.jvm"
-    id "org.jetbrains.kotlin.plugin.spring" version "1.5.31"
+    id "org.jetbrains.kotlin.plugin.spring" version "1.7.0"
 }
 
 description = "This is an annotation processor for Spring MVC @Controller & @RestController annotation. It generates the Java code of the Wiremock stubs."
 
-compileKotlin.kotlinOptions.jvmTarget = "11"
-compileTestKotlin.kotlinOptions.jvmTarget = "11"
+compileKotlin.kotlinOptions.jvmTarget = "17"
+compileTestKotlin.kotlinOptions.jvmTarget = "17"
 
 apply plugin: 'io.spring.dependency-management'
 dependencyManagement {
@@ -24,11 +24,11 @@ dependencyManagement {
 dependencies {
 
     // kotlin
-    implementation 'org.jetbrains.kotlin:kotlin-reflect:1.5.31'
-    implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.5.31'
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.5.31"
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-common:1.5.31"
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:1.5.31"
+    implementation 'org.jetbrains.kotlin:kotlin-reflect:1.7.0'
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.7.0'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.7.0"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-common:1.7.0"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:1.7.0"
 
     implementation "io.pebbletemplates:pebble:3.1.5"
     implementation 'org.apache.commons:commons-text:1.9'
@@ -41,6 +41,7 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
     testImplementation 'org.junit.platform:junit-platform-commons:1.8.2'
     testImplementation 'io.mockk:mockk:1.12.0'
+    testImplementation 'org.mockito:mockito-core:4.3.1'
     testImplementation 'org.hamcrest:hamcrest:2.2'
 }
 
@@ -51,14 +52,14 @@ test {
         exceptionFormat "full"
     }
     finalizedBy jacocoTestReport
-//    afterSuite { desc, result ->
-//        if (!desc.parent) {
-//            logger.lifecycle("Test results: (${result.testCount} tests, ${result.successfulTestCount} successes, ${result.failedTestCount} failures, ${result.skippedTestCount} skipped)")
-//            if (result.testCount == 0) {
-//                throw new IllegalStateException("No tests were found. Failing the build")
-//            }
-//        }
-//    }
+    afterSuite { desc, result ->
+        if (!desc.parent) {
+            logger.lifecycle("Test results: (${result.testCount} tests, ${result.successfulTestCount} successes, ${result.failedTestCount} failures, ${result.skippedTestCount} skipped)")
+            if (result.testCount == 0) {
+                throw new IllegalStateException("No tests were found. Failing the build")
+            }
+        }
+    }
 }
 
 jacoco {
@@ -91,7 +92,7 @@ publishing {
                 licenses {
                     license {
                         name = "The Apache Software License, Version 2.0"
-                        url = "http://www.apache.org/licenses/LICENSE-2.0.txt"
+                        url = "https://www.apache.org/licenses/LICENSE-2.0.txt"
                         distribution = "repo"
                     }
                 }
